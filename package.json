@@ -1,7 +1,7 @@
 {
-  "name": "ts-lib-template",
-  "version": "1.3.5",
-  "description": "ts-lib-template desc",
+  "name": "@shirtiny/mira",
+  "version": "0.0.2",
+  "description": "mira desc",
   "types": "./dist/types/main.d.ts",
   "main": "./dist/main.es.js",
   "browser": "./dist/main.es.js",
@@ -19,8 +19,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "dotenv -c development node .node/server.js",
-    "build": "npm run clean && dotenv -c production node .node/builder.js",
+    "start": "dotenv -c development node config/server.js",
+    "build": "npm run clean && dotenv -c production node config/builder.js",
     "test": "jest",
     "lint": "eslint --max-warnings 0 . --ext .ts",
     "clean": "shx rm -rf dist",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Shirtiny/ts-lib-template"
+    "url": "git+https://github.com/Shirtiny/mira"
   },
   "keywords": [
     "consloe",
@@ -44,12 +44,12 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Shirtiny/ts-lib-template/issues"
+    "url": "https://github.com/Shirtiny/mira/issues"
   },
   "jest": {
     "preset": "ts-jest"
   },
-  "homepage": "https://github.com/Shirtiny/ts-lib-template#readme",
+  "homepage": "https://github.com/Shirtiny/mira#readme",
   "devDependencies": {
     "@cowcoders/eslint-config": "^1.2.9",
     "@types/jest": "26.0.23",
