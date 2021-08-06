@@ -6,6 +6,7 @@
     },
     "jsx": "preserve",
     "jsxFactory": "createElement",
+    "jsxFragmentFactory": "Fragment",
     "target": "ES2015",
     "module": "ES6",
     "moduleResolution": "node",
@@ -15,7 +16,7 @@
     "emitDeclarationOnly": true,
     "strict": true,
     "allowJs": false,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noUnusedLocals": true,
@@ -40,7 +41,8 @@
     ],
   },
   "include": [
-    "src",
+    "src/**/*.ts",
+    "src/**/*.tsx",
   ],
   "exclude": [
     "node_modules",

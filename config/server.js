@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-25 17:35:25
- * @LastEditTime: 2021-08-06 16:18:37
+ * @LastEditTime: 2021-08-06 21:51:59
  * @Description:
  */
 "use strict";
@@ -81,7 +81,8 @@ const serve = async () => {
       loader: {
         ".svg": "dataurl",
       },
-      jsxFactory: "createElement",
+      jsxFactory: config.jsxFactory,
+      jsxFragment: config.jsxFragment
     },
   );
 

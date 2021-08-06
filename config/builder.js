@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-26 17:41:22
- * @LastEditTime: 2021-08-06 16:19:08
+ * @LastEditTime: 2021-08-06 21:51:37
  * @Description:
  */
 const esbuild = require("esbuild");
@@ -82,7 +82,8 @@ const build = async ({ entryPoints = [], platform, outfile, plugins = [] }) => {
       },
       outfile,
       plugins,
-      jsxFactory: "createElement",
+      jsxFactory: config.jsxFactory,
+      jsxFragment: config.jsxFragment
     });
     childProcess.execSync("tsc");
     logger.chan("Building", [entryPoints.join("; ")], outfile);

@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 14:40:58
- * @LastEditTime: 2021-08-06 16:22:29
+ * @LastEditTime: 2021-08-06 21:55:38
  * @Description: 核心模块
  */
 import render from "./render";
@@ -22,11 +22,14 @@ const createElement = (
   };
 };
 
-export { render, createElement };
+const Fragment = (props: Props) => props.children;
+
+export { render, createElement, Fragment};
 
 const core = {
   render,
   createElement,
+  Fragment
 };
 
 export default core;
