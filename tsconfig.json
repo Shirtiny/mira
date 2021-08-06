@@ -4,8 +4,10 @@
     "paths": {
       // "@/*": ["src/*"]
     },
+    "jsx": "preserve",
+    "jsxFactory": "createElement",
     "target": "ES2015",
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "resolveJsonModule": false,
     "declaration": true,
@@ -35,10 +37,10 @@
     "lib": [
       "ES6",
       "DOM"
-    ]
+    ],
   },
   "include": [
-    "src/**/*.ts",
+    "src",
   ],
   "exclude": [
     "node_modules",
