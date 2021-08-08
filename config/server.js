@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-25 17:35:25
- * @LastEditTime: 2021-08-06 21:51:59
+ * @LastEditTime: 2021-08-08 13:36:28
  * @Description:
  */
 "use strict";
@@ -22,7 +22,7 @@ const publicDirPath = path.resolve(__dirname, "../public");
 const srcDirPath = path.resolve(__dirname, "../src");
 const distDirPath = path.resolve(__dirname, "../dist");
 
-const srcFileName = "index.ts";
+const srcFileName = "index.tsx";
 const distFileName = "index.js";
 
 // 需代理的路径列表
@@ -82,7 +82,7 @@ const serve = async () => {
         ".svg": "dataurl",
       },
       jsxFactory: config.jsxFactory,
-      jsxFragment: config.jsxFragment
+      jsxFragment: config.jsxFragment,
     },
   );
 

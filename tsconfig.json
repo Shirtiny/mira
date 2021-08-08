@@ -5,8 +5,8 @@
       // "@/*": ["src/*"]
     },
     "jsx": "preserve",
-    "jsxFactory": "createElement",
-    "jsxFragmentFactory": "Fragment",
+    "jsxFactory": "Mira.createElement",
+    "jsxFragmentFactory": "Mira.Fragment",
     "target": "ES2015",
     "module": "ES6",
     "moduleResolution": "node",

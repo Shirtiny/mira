@@ -3,19 +3,24 @@
   "version": "0.0.2",
   "description": "mira desc",
   "types": "./dist/types/main.d.ts",
-  "main": "./dist/main.es.js",
-  "browser": "./dist/main.es.js",
-  "module": "./dist/main.es.js",
+  "main": "./dist/mira.es.js",
+  "browser": "./dist/mira.es.js",
+  "module": "./dist/mira.es.js",
   "exports": {
-    "./dist/main.es.css": "./dist/main.es.css",
+    "./dist/main.es.css": "./dist/mira.es.css",
     ".": {
-      "import": "./dist/main.es.js",
-      "require": "./dist/cli.js"
+      "import": "./dist/mira.es.js",
+      "require": "./dist/mira.cli.js"
+    },
+    "./jsx-runtime": {
+      "import": "./jsx-runtime.js",
+      "require": "./jsx-runtime.js"
     }
   },
-  "bin": "./dist/cli.js",
+  "bin": "./dist/mira.cli.js",
   "files": [
     "dist",
+    "jsx-runtime.js",
     "LICENSE"
   ],
   "scripts": {

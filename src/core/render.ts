@@ -1,11 +1,18 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 15:00:12
- * @LastEditTime: 2021-08-05 17:57:52
+ * @LastEditTime: 2021-08-08 14:33:34
  * @Description: 渲染
  */
 
-import { MiraElement, Props } from "./types";
+import { FC, Instance, Props } from "./types";
+
+/**
+ * @description: 判断是否为函数
+ * @param {any} arg
+ * @return {Boolean}
+ */
+const isFn = (arg: any): boolean => typeof arg === "function";
 
 /**
  * @description:
@@ -30,25 +37,33 @@ const setPropsForDomEl = (props?: Props, el?: Element): void => {
 
 /**
  * @description：将虚拟元素节点渲染为dom节点
- * @param {MiraElement} miraElement 虚拟元素
+ * @param {Instance} miraElement 虚拟元素
  * @param {Element} parent dom
- * @return {*}
+ * @return {void}
  */
-const render = (miraElement: MiraElement | string, parent: Element | null) => {
+const render = (instance: Instance | string, parent: Element | null): void => {
   if (!parent) return;
   // 为字符串时 创建文本节点
-  if (typeof miraElement === "string") {
-    const textNode = document.createTextNode(miraElement);
+  if (typeof instance === "string") {
+    const textNode = document.createTextNode(instance);
     parent.appendChild(textNode);
     return;
   }
+
+  // 判断是否为函数组件
+  const miraElement = isFn(instance.type)
+    ? (instance.type as FC<Props>)(instance.props)
+    : instance;
+
+  if (!miraElement) return;
+
   // 渲染节点
   const { type, props } = miraElement;
-  const el = document.createElement(type);
+  const el = document.createElement(type as string);
   setPropsForDomEl(props, el);
   const children = props.children || [];
   // 递归渲染子节点
-  children.forEach((child) => render(child, el));
+  children.forEach((child: string | Instance) => render(child, el));
   parent.appendChild(el);
 };
 

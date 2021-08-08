@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-26 17:41:22
- * @LastEditTime: 2021-08-06 21:51:37
+ * @LastEditTime: 2021-08-08 10:16:23
  * @Description:
  */
 const esbuild = require("esbuild");
@@ -16,6 +16,7 @@ const logger = require("./logger");
 
 const srcDirPath = "../src";
 const distDirPath = "../dist";
+const fileName = config.outputFileName || "main";
 
 const createFilePath = (dirPath, fileName) => {
   return path.resolve(__dirname, `${dirPath}/${fileName}`);
@@ -25,7 +26,7 @@ const buildList = [
   {
     entryPoints: [createFilePath(srcDirPath, "browser.ts")],
     platform: "browser",
-    outfile: createFilePath(distDirPath, "main.browser.js"),
+    outfile: createFilePath(distDirPath, fileName + ".browser.js"),
     plugins: [
       sassPlugin({
         async transform(source) {
@@ -44,7 +45,7 @@ const buildList = [
   {
     entryPoints: [createFilePath(srcDirPath, "es.ts")],
     platform: "neutral",
-    outfile: createFilePath(distDirPath, "main.es.js"),
+    outfile: createFilePath(distDirPath, fileName + ".es.js"),
     plugins: [
       sassPlugin({
         async transform(source) {
@@ -63,7 +64,7 @@ const buildList = [
   {
     entryPoints: [createFilePath(srcDirPath, "cli.ts")],
     platform: "node",
-    outfile: createFilePath(distDirPath, "cli.js"),
+    outfile: createFilePath(distDirPath, fileName + ".cli.js"),
     plugins: [],
   },
 ];
@@ -83,7 +84,7 @@ const build = async ({ entryPoints = [], platform, outfile, plugins = [] }) => {
       outfile,
       plugins,
       jsxFactory: config.jsxFactory,
-      jsxFragment: config.jsxFragment
+      jsxFragment: config.jsxFragment,
     });
     childProcess.execSync("tsc");
     logger.chan("Building", [entryPoints.join("; ")], outfile);
