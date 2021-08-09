@@ -1,26 +1,21 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 15:00:12
- * @LastEditTime: 2021-08-08 14:33:34
+ * @LastEditTime: 2021-08-09 15:57:59
  * @Description: 渲染
  */
 
-import { FC, Instance, Props } from "./types";
+import { DOM, FC, MiraElement, Props } from "./types";
+import util from "../utils/util";
 
-/**
- * @description: 判断是否为函数
- * @param {any} arg
- * @return {Boolean}
- */
-const isFn = (arg: any): boolean => typeof arg === "function";
+let rootAskrNode = null;
 
 /**
  * @description:
  * @param {Props} props
  * @return {void}
  */
-const setPropsForDomEl = (props?: Props, el?: Element): void => {
-  if (!props || !el) return;
+const setPropsForDomEl = (props: Props, el: DOM): void => {
   const keys = Object.keys(props);
 
   keys.forEach((key) => {
@@ -30,40 +25,37 @@ const setPropsForDomEl = (props?: Props, el?: Element): void => {
     if (key.startsWith("on")) {
       el.addEventListener(key.substring(2).toLowerCase(), props[key]);
     } else {
-      el.setAttribute(key, props[key]);
+      (<any>el)[key] = props[key];
     }
   });
 };
 
 /**
  * @description：将虚拟元素节点渲染为dom节点
- * @param {Instance} miraElement 虚拟元素
+ * @param {MiraElement} miraElement 虚拟元素
  * @param {Element} parent dom
  * @return {void}
  */
-const render = (instance: Instance | string, parent: Element | null): void => {
+const render = (miraElement: MiraElement, parent: DOM | null): void => {
   if (!parent) return;
-  // 为字符串时 创建文本节点
-  if (typeof instance === "string") {
-    const textNode = document.createTextNode(instance);
-    parent.appendChild(textNode);
-    return;
-  }
 
-  // 判断是否为函数组件
-  const miraElement = isFn(instance.type)
-    ? (instance.type as FC<Props>)(instance.props)
-    : instance;
+  // 判断是否为函数组件 或对象
+  const element: MiraElement | null = util.isFn(miraElement.type)
+    ? (miraElement.type as FC<Props>)(miraElement.props)
+    : miraElement;
 
-  if (!miraElement) return;
+  if (!element) return;
 
   // 渲染节点
-  const { type, props } = miraElement;
-  const el = document.createElement(type as string);
-  setPropsForDomEl(props, el);
+  const { type, props } = element;
+  const el =
+    type === ""
+      ? document.createTextNode("")
+      : document.createElement(type as string);
+  setPropsForDomEl(props, el as DOM);
   const children = props.children || [];
   // 递归渲染子节点
-  children.forEach((child: string | Instance) => render(child, el));
+  children.forEach((child) => render(child, el as DOM));
   parent.appendChild(el);
 };
 

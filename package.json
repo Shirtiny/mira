@@ -1,6 +1,6 @@
 {
   "name": "@shirtiny/mira",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "mira desc",
   "types": "./dist/types/main.d.ts",
   "main": "./dist/mira.es.js",
