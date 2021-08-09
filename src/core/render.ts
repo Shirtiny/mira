@@ -2,7 +2,7 @@ import { AskrNode } from "./types";
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 15:00:12
- * @LastEditTime: 2021-08-09 17:21:49
+ * @LastEditTime: 2021-08-09 17:53:04
  * @Description: 渲染
  */
 
@@ -86,16 +86,24 @@ function reconcile(
   miraElement: MiraElement,
 ): AskrNode | null {
   if (!parent) return null;
-
-  const node = createAskrNode(miraElement);
-  if (!node) return null;
-
-  if (!askrNode) {
-    parent.appendChild(node.dom);
-  } else {
-    parent.replaceChild(node.dom, askrNode.dom);
+  // 类型相同复用dom
+  if (askrNode?.miraElement?.type === miraElement.type) {
+    updatePropsForDomEl(
+      askrNode.miraElement.props,
+      miraElement.props,
+      askrNode.dom,
+    );
+    // 更新node引用的element
+    askrNode.miraElement = miraElement;
+    return askrNode;
   }
 
+  const node = createAskrNode(miraElement);
+  if (!askrNode) {
+    node && parent.appendChild(node.dom);
+  } else {
+    node && parent.replaceChild(node.dom, askrNode.dom);
+  }
   return node;
 }
 
