@@ -1,10 +1,10 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 14:40:58
- * @LastEditTime: 2021-08-09 16:01:03
+ * @LastEditTime: 2021-08-09 16:03:06
  * @Description: 核心模块
  */
-import util from "src/utils/util";
+import util from "../utils/util";
 import render from "./render";
 import { MiraElement, Props } from "./types";
 
