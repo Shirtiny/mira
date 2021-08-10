@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 14:54:27
- * @LastEditTime: 2021-08-09 15:56:30
+ * @LastEditTime: 2021-08-10 11:22:49
  * @Description: core类型
  */
 
@@ -26,5 +26,5 @@ export interface FC<P extends Props = {}> {
 export interface AskrNode {
   miraElement: MiraElement;
   dom: DOM;
-  children: Array<AskrNode>;
+  kids: Array<AskrNode>;
 }

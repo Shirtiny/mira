@@ -1,12 +1,11 @@
-import { AskrNode } from "./types";
 /*
  * @Author: Shirtiny
  * @Date: 2021-08-05 15:00:12
- * @LastEditTime: 2021-08-09 17:53:04
+ * @LastEditTime: 2021-08-10 11:28:31
  * @Description: 渲染
  */
 
-import { DOM, FC, MiraElement, Props } from "./types";
+import { DOM, FC, MiraElement, Props, AskrNode } from "./types";
 import util from "../utils/util";
 
 let rootAskrNode: AskrNode | null = null;
@@ -29,7 +28,7 @@ const updatePropsForDomEl = (
       return;
     }
     if (key.startsWith("on")) {
-      el.removeEventListener(key.substring(2).toLowerCase(), nextProps[key]);
+      el.removeEventListener(key.substring(2).toLowerCase(), preProps[key]);
     } else {
       (<any>el)[key] = null;
     }
@@ -47,16 +46,18 @@ const updatePropsForDomEl = (
   });
 };
 
-const createAskrNode = (miraElement: MiraElement): AskrNode | null => {
-  // 判断是否为函数组件 或对象
-  const element: MiraElement | null = util.isFn(miraElement.type)
-    ? (miraElement.type as FC<Props>)(miraElement.props)
-    : miraElement;
-
+const createAskrNode = (element: MiraElement): AskrNode | null => {
   if (!element) return null;
 
+  // 判断是否为函数组件 或对象
+  const miraElement: MiraElement | null = util.isFn(element.type)
+    ? (element.type as FC<Props>)(element.props)
+    : element;
+
+  if (!miraElement) return null;
+
   // 渲染节点
-  const { type, props } = element;
+  const { type, props } = miraElement;
   const el =
     type === ""
       ? document.createTextNode("")
@@ -66,26 +67,66 @@ const createAskrNode = (miraElement: MiraElement): AskrNode | null => {
   updatePropsForDomEl({}, props, el as DOM);
 
   const children = props.children || [];
+
   // 递归生成子节点的dom和node
-  const kids: Array<AskrNode> = children.map((child) => createAskrNode(child));
-  // 插入dom
-  kids.forEach((kid) => el.appendChild(kid.dom));
+  const kids: Array<AskrNode> = [];
+  children.forEach((child: MiraElement) => {
+    const node = createAskrNode(child);
+    if (!node) return;
+    kids.push(node);
+    el.appendChild(node.dom);
+  });
 
   const askrNode: AskrNode = {
-    miraElement: element,
+    miraElement,
     dom: el as DOM,
-    children: kids,
+    kids,
   };
 
   return askrNode;
 };
 
-function reconcile(
+const reconcileChildren = (askrNode: AskrNode, miraElement: MiraElement) => {
+  // instance 旧
+  // element 新
+  const dom = askrNode.dom;
+  const kids = askrNode.kids;
+  const nextChildElements = miraElement.props.children || [];
+  const newKids: Array<AskrNode> = []; // 新的孩子数组
+
+  const count = Math.max(kids.length, nextChildElements.length);
+
+  for (let i = 0; i < count; i++) {
+    const kid = kids[i];
+    const childElement = nextChildElements[i];
+
+    // 2. 递归 - 上一层函数 reconcile
+    const newKid = reconcile(dom, kid, childElement);
+    if (newKid) {
+      newKids.push(newKid);
+    }
+  }
+  return newKids;
+};
+
+const reconcile = (
   parent: DOM,
   askrNode: AskrNode | null,
-  miraElement: MiraElement,
-): AskrNode | null {
-  if (!parent) return null;
+  element: MiraElement,
+): AskrNode | null => {
+  if (!parent || !element) return null;
+
+  // 判断是否为函数组件 或对象
+  const miraElement: MiraElement | null = util.isFn(element.type)
+    ? (element.type as FC<Props>)(element.props)
+    : element;
+
+  // 预渲染元素为空时 删除dom
+  if (!miraElement) {
+    askrNode?.dom && parent.removeChild(askrNode.dom);
+    return null;
+  }
+
   // 类型相同复用dom
   if (askrNode?.miraElement?.type === miraElement.type) {
     updatePropsForDomEl(
@@ -93,6 +134,8 @@ function reconcile(
       miraElement.props,
       askrNode.dom,
     );
+    // 1. 替换-新的孩子数组
+    askrNode.kids = reconcileChildren(askrNode, miraElement);
     // 更新node引用的element
     askrNode.miraElement = miraElement;
     return askrNode;
@@ -105,7 +148,7 @@ function reconcile(
     node && parent.replaceChild(node.dom, askrNode.dom);
   }
   return node;
-}
+};
 
 /**
  * @description：将虚拟元素节点渲染为dom节点
