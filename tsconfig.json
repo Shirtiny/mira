@@ -11,9 +11,6 @@
     "module": "ES6",
     "moduleResolution": "node",
     "resolveJsonModule": false,
-    "declaration": true,
-    "declarationDir": "./dist/types",
-    "emitDeclarationOnly": true,
     "strict": true,
     "allowJs": false,
     "noImplicitAny": false,
@@ -29,24 +26,13 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "removeComments": true,
-    "sourceMap": false,
+    "sourceMap": true,
+    "declaration": true,
+    "emitDeclarationOnly": false,
     "outDir": "./tsc/",
-    "types": [
-      "node",
-      "jest"
-    ],
-    "lib": [
-      "ES6",
-      "DOM"
-    ],
+    "types": ["node", "jest"],
+    "lib": ["ES6", "DOM"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-  ],
-  "exclude": [
-    "node_modules",
-    "node",
-    "**/*.test.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "node", "**/*.test.ts"]
 }
