@@ -1,7 +1,12 @@
 /*
  * @Author: Shirtiny
- * @Date: 2021-08-06 20:50:15
- * @LastEditTime: 2021-08-08 10:26:27
+ * @Date: 2022-01-11 11:56:40
+ * @LastEditTime: 2022-01-11 12:01:27
  * @Description:
  */
-export { createElement as jsx, createElement as jsxs, Fragment } from "./dist/mira.es.js"
+import jsxLib from "./dist/lib/jsx";
+
+const jsx = jsxLib.createElement;
+const Fragment = jsxLib.Fragment;
+
+export { jsx, jsx as jsxs, Fragment };

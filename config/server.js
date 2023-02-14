@@ -1,7 +1,7 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-25 17:35:25
- * @LastEditTime: 2021-08-08 13:36:28
+ * @LastEditTime: 2021-11-27 09:58:18
  * @Description:
  */
 "use strict";
@@ -22,7 +22,7 @@ const publicDirPath = path.resolve(__dirname, "../public");
 const srcDirPath = path.resolve(__dirname, "../src");
 const distDirPath = path.resolve(__dirname, "../dist");
 
-const srcFileName = "index.tsx";
+const srcFileName = "index.ts";
 const distFileName = "index.js";
 
 // 需代理的路径列表
@@ -49,8 +49,8 @@ const createDevProxyURL = (reqUrl = "") => {
 };
 
 const serve = async () => {
-  await util.mkdir(distDirPath);
-  util.cpAllDirChildsToDir(publicDirPath, distDirPath);
+  // await util.mkdir(distDirPath);
+  // util.cpAllDirChildsToDir(publicDirPath, distDirPath);
 
   const result = await esbuild.serve(
     {
@@ -65,7 +65,7 @@ const serve = async () => {
       bundle: true,
       sourcemap: "both",
       define: {
-        "process.env": JSON.stringify(process.env),
+        "process.env": JSON.stringify(config.env || process.env),
       },
       plugins: [
         sassPlugin({
@@ -83,6 +83,7 @@ const serve = async () => {
       },
       jsxFactory: config.jsxFactory,
       jsxFragment: config.jsxFragment,
+      inject: ["./jsx-shim.ts"],
     },
   );
 
@@ -121,7 +122,7 @@ const serve = async () => {
     })
     .listen(proxyServerPort);
 
-  open(`http://${host}:${proxyServerPort}`);
+  // open(`http://${host}:${proxyServerPort}`);
 
   logger.log("(≧∇≦)ﾉ Hi~！");
   logger.server("Build Server", host, port, "http:");

@@ -7,7 +7,6 @@
   "browser": "./dist/mira.es.js",
   "module": "./dist/mira.es.js",
   "exports": {
-    "./dist/main.es.css": "./dist/mira.es.css",
     ".": {
       "import": "./dist/mira.es.js",
       "require": "./dist/mira.cli.js"
@@ -15,9 +14,19 @@
     "./jsx-runtime": {
       "import": "./jsx-runtime.js",
       "require": "./jsx-runtime.js"
+    },
+    "./src/*": {
+      "import": "./src/*"
+    },
+    "./lib": {
+      "types": "./dist/types/lib/index.d.ts",
+      "import": "./dist/lib/index.js"
+    },
+    "./lib/*": {
+      "types": "./dist/types/lib/*.d.ts",
+      "import": "./dist/lib/*.js"
     }
   },
-  "bin": "./dist/mira.cli.js",
   "files": [
     "dist",
     "jsx-runtime.js",
@@ -59,9 +68,13 @@
     "@cowcoders/eslint-config": "^1.2.9",
     "@types/jest": "26.0.23",
     "@types/node": "15.6.1",
+    "@types/w3c-image-capture": "^1.0.7",
+    "@types/wicg-file-system-access": "^2020.9.5",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
     "autoprefixer": "^10.3.0",
+    "camelcase": "^7.0.1",
+    "chalk": "^5.2.0",
     "dotenv-cli": "^4.0.0",
     "esbuild": "0.12.5",
     "esbuild-sass-plugin": "^1.4.8",

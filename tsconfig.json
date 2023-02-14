@@ -1,14 +1,15 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       // "@/*": ["src/*"]
     },
     "jsx": "preserve",
-    "jsxFactory": "Mira.createElement",
-    "jsxFragmentFactory": "Mira.Fragment",
+    "jsxFactory": "jsx.createElement",
+    "jsxFragmentFactory": "jsx.Fragment",
     "target": "ES2015",
-    "module": "ES6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": false,
     "strict": true,
@@ -30,8 +31,8 @@
     "declaration": true,
     "emitDeclarationOnly": false,
     "outDir": "./tsc/",
-    "types": ["node", "jest"],
-    "lib": ["ES6", "DOM"]
+    "types": ["node", "jest", "w3c-image-capture", "wicg-file-system-access"],
+    "lib": ["ES6", "ESNext.WeakRef", "DOM"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "node", "**/*.test.ts"]
