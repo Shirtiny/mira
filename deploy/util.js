@@ -5,8 +5,9 @@
  * @Description:
  */
 
-const fs = require("fs");
-const shell = require("shelljs");
+import fs from "fs";
+import shell from "shelljs";
+import path from "path";
 
 const isPathExisted = async (path) => {
   return new Promise((resolve) => {
@@ -34,17 +35,32 @@ const writeFile = (path, content) => {
 };
 
 const rm = (path) => {
-  shell.rm("-rf", path);
+  // shell.rm("-rf", path);
+  fs.rmSync(path, { recursive: true, force: true });
 };
 
-const cpAllDirChildsToDir = (dirPath, targetDirPath) => {
+const cpAllDirChildrenToDir = async (dirPath, targetDirPath) => {
+  await mkdir(targetDirPath);
   shell.cp("-rf", `${dirPath}/*`, `${targetDirPath}/`);
 };
 
-module.exports = {
+const renameFile = (filePath, newName) => {
+  shell.mv(filePath, path.resolve(path.dirname(filePath), newName));
+};
+
+const pipePromises = (...fns) => {
+  return async (input) =>
+    fns.reduce((promise, fn) => promise.then(fn), Promise.resolve(input));
+};
+
+const util = {
   isPathExisted,
   mkdir,
   rm,
-  cpAllDirChildsToDir,
+  cpAllDirChildrenToDir,
   writeFile,
+  renameFile,
+  pipePromises,
 };
+
+export default util;

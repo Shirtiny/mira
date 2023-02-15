@@ -1,11 +1,15 @@
 node_modules
 dist
+dist_*
 /lib
 *.tgz
 
 .DS_Store
 .vscode
 .idea
+
+.turbo
+.parcel-cache
 pkg
 
 # Log files

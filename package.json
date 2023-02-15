@@ -2,29 +2,19 @@
   "name": "@shirtiny/mira",
   "version": "0.0.3",
   "description": "mira desc",
-  "types": "./dist/types/main.d.ts",
-  "main": "./dist/mira.es.js",
-  "browser": "./dist/mira.es.js",
-  "module": "./dist/mira.es.js",
+  "type": "module",
+  "types": "./dist/types/index.d.ts",
+  "main": "dist/main.es.js",
+  "browser": "dist/main.browser.js",
   "exports": {
     ".": {
-      "import": "./dist/mira.es.js",
-      "require": "./dist/mira.cli.js"
+      "import": "./dist/main.es.js"
     },
     "./jsx-runtime": {
-      "import": "./jsx-runtime.js",
-      "require": "./jsx-runtime.js"
+      "import": "./jsx-runtime.js"
     },
     "./src/*": {
       "import": "./src/*"
-    },
-    "./lib": {
-      "types": "./dist/types/lib/index.d.ts",
-      "import": "./dist/lib/index.js"
-    },
-    "./lib/*": {
-      "types": "./dist/types/lib/*.d.ts",
-      "import": "./dist/lib/*.js"
     }
   },
   "files": [
@@ -33,8 +23,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "dotenv -c development node config/server.js",
-    "build": "npm run clean && dotenv -c production node config/builder.js",
+    "start": "dotenv -c development node deploy/server.js",
+    "build": "npm run clean && dotenv -c production node deploy/builder.js",
     "test": "jest",
     "lint": "eslint --max-warnings 0 . --ext .ts",
     "clean": "shx rm -rf dist",
@@ -65,30 +55,32 @@
   },
   "homepage": "https://github.com/Shirtiny/mira#readme",
   "devDependencies": {
-    "@cowcoders/eslint-config": "^1.2.9",
-    "@types/jest": "26.0.23",
-    "@types/node": "15.6.1",
     "@types/w3c-image-capture": "^1.0.7",
     "@types/wicg-file-system-access": "^2020.9.5",
+    "chalk": "^5.2.0",
+    "@parcel/config-default": "^2.8.3",
+    "@parcel/core": "^2.8.3",
+    "@parcel/packager-ts": "^2.8.3",
+    "@parcel/reporter-cli": "^2.8.3",
+    "@parcel/transformer-sass": "^2.8.3",
+    "@parcel/transformer-typescript-types": "^2.8.3",
+    "@types/jest": "26.0.23",
+    "@types/node": "15.6.1",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
-    "autoprefixer": "^10.3.0",
-    "camelcase": "^7.0.1",
-    "chalk": "^5.2.0",
+    "camelcase": "^6.2.1",
     "dotenv-cli": "^4.0.0",
-    "esbuild": "0.12.5",
-    "esbuild-sass-plugin": "^1.4.8",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "jest": "27.0.3",
+    "nanocolors": "^0.2.10",
     "open": "^8.2.0",
-    "postcss": "^8.3.5",
-    "postcss-preset-env": "^6.7.0",
     "prettier": "^2.3.0",
     "shx": "^0.3.3",
+    "tasuku": "^1.0.2",
     "ts-jest": "27.0.1",
     "ts-node": "10.0.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.3"
   }
 }

@@ -1,10 +1,4 @@
 #!/bin/sh
-###
- # @Author: Shirtiny
- # @Date: 2021-08-05 14:15:59
- # @LastEditTime: 2021-08-05 14:23:16
- # @Description:
-###
 
 set -e
 
@@ -28,5 +22,4 @@ publish() {
 }
 
 assert_ready_to_publish
-
 publish

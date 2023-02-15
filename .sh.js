@@ -1,26 +1,20 @@
 /*
  * @Author: Shirtiny
  * @Date: 2021-06-26 20:47:19
- * @LastEditTime: 2021-12-14 13:50:45
+ * @LastEditTime: 2021-12-09 21:00:58
  * @Description:
  */
 
-const camelCase = require("camelcase");
+import camelCase from "camelcase";
 
-const {
-  HOST,
-  PORT,
-  NODE_ENV,
-  PASSWORD,
-  npm_package_version,
-  npm_package_name,
-} = process.env;
+const { MY_ENV, HOST, PORT, NODE_ENV, npm_package_version, npm_package_name } =
+  process.env;
 
 const env = {
+  MY_ENV,
   HOST,
   PORT,
   NODE_ENV,
-  PASSWORD,
   npm_package_name,
   npm_package_version,
 };
@@ -32,20 +26,13 @@ const globalName =
       .replace(/[^a-z_]/gi, ""),
   ) || "globalName";
 
-module.exports = {
+console.log("APP globalName : ", globalName);
+
+export default {
   globalName,
-  outputFileName: "main",
   devServer: {
     host: HOST || "localhost",
     port: PORT || 2021,
-    proxy: {
-      "^/api": {
-        target: "http://192.168.0.123:1234",
-        pathRewrite: { "^/api": "" },
-      },
-    },
   },
-  jsxFactory: "jsx.createElement",
-  jsxFragment: "jsx.Fragment",
   env,
 };

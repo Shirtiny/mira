@@ -29,8 +29,6 @@
     "removeComments": true,
     "sourceMap": true,
     "declaration": true,
-    "emitDeclarationOnly": false,
-    "outDir": "./tsc/",
     "types": ["node", "jest", "w3c-image-capture", "wicg-file-system-access"],
     "lib": ["ES6", "ESNext.WeakRef", "DOM"]
   },
