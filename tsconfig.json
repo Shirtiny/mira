@@ -6,8 +6,9 @@
       // "@/*": ["src/*"]
     },
     "jsx": "preserve",
-    "jsxFactory": "jsx.createElement",
-    "jsxFragmentFactory": "jsx.Fragment",
+    "jsxFactory": "mira.createElement",
+    "jsxFragmentFactory": "mira.Fragment",
+    // "jsxImportSource": "/",
     "target": "ES2015",
     "module": "commonjs",
     "moduleResolution": "node",

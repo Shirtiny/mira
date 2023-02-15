@@ -5,6 +5,7 @@
  * @Description:
  */
 
+import mira from "./core/jsx";
 import "./style/index.scss";
 
 const list = [0, 1, 2, 3];

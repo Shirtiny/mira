@@ -5,7 +5,7 @@
  * @Description: 项目写的jsx只是创建dom时执行一次 无其他逻辑
  */
 
-import lang from "./lang";
+import lang from "../utils/lang";
 import logger from "../utils/logger";
 import dom from "./dom";
 

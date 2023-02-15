@@ -4,13 +4,10 @@
  * @LastEditTime: 2021-08-10 11:13:41
  * @Description: 开发用
  */
-import * as Mira from "./core";
+import mira from "./core/jsx";
+import { render } from "./core";
 import App from "./App";
 
-Mira.render(<App />, document.querySelector("#root"));
+render(<App />, document.querySelector("#root"));
 
 console.log("sd");
-
-const mira = {};
-
-export default mira;

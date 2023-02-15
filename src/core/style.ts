@@ -5,7 +5,7 @@
  * @Description:
  */
 
-import lang from "./lang";
+import lang from "../utils/lang";
 
 type Text = string | number;
 

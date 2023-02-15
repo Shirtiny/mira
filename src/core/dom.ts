@@ -1,5 +1,5 @@
 import { grow, RenderTarget, JSX } from "./jsx";
-import lang from "./lang";
+import lang from "../utils/lang";
 import style from "./style";
 
 export function parseHtml(htmlString: string): DocumentFragment {
