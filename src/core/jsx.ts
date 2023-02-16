@@ -8,64 +8,27 @@
 import lang from "../utils/lang";
 import logger from "../utils/logger";
 import dom from "./dom";
+import { IProps, RenderTarget, MiraElement } from "./types";
 
-export type RenderTarget =
-  | HTMLElement
-  | SVGElement
-  | Text
-  | DocumentFragment
-  | null;
-
-export interface IJsxProps extends Record<string, any> {
-  children?: Array<any>;
-}
-
-// 暂时不写那么复杂
-// 注意创建的元素不只有htmlElement 这里只写通用jsx属性
-// 想要定义某个elemName的属性 在IntrinsicElements新增行 格式为元素名称和对应接口
-export interface ICommonJsxAttributes extends Record<string, any> {
-  className?: string;
-  style?: string | CSSStyleDeclaration;
-}
-
-// 函数式
-export interface FC<P extends IJsxProps = any> {
-  (props: P): JSX.Element | null;
-  tag?: number;
-  type?: string;
-}
-
-// jsx类型定义
-export declare namespace JSX {
-  interface Element<P extends IJsxProps = any> {
-    type: string | FC<P>;
-    props: P;
-    // key: string; 因为只用来创建 所以不管key
-  }
-  interface IntrinsicElements {
-    [elemName: string]: ICommonJsxAttributes;
-  }
-}
-
-function some(x: unknown) {
+function checkIsNotEmptyChild(x: any) {
   return x != null && x !== true && x !== false;
 }
 
-function flat(arr: any[], target: any[] = []) {
+function flatAndFilter(arr: any[], target: any[] = []) {
   arr.forEach((v) => {
     lang.isArray(v)
-      ? flat(v, target)
-      : some(v) && target.push(lang.isText(v) ? text(v) : v);
+      ? flatAndFilter(v, target)
+      : checkIsNotEmptyChild(v) && target.push(lang.isText(v) ? text(v) : v);
   });
   return target;
 }
 
-function toArray(arr: any) {
-  return !arr ? [] : lang.isArray(arr) ? arr : [arr];
+function toArray(arg: any) {
+  return !arg ? [] : lang.isArray(arg) ? arg : [arg];
 }
 
 // 只初始化无更新逻辑
-function initProps(props: IJsxProps = {}, el: RenderTarget): void {
+function initProps(props: IProps = {}, el: RenderTarget): void {
   if (!el) return;
   const keys = Object.keys(props);
 
@@ -105,7 +68,7 @@ function initProps(props: IJsxProps = {}, el: RenderTarget): void {
 }
 
 function text(v?: any) {
-  return { type: "", props: { nodeValue: String(v) + "" } } as JSX.Element;
+  return { type: "", props: { nodeValue: String(v) + "" } } as MiraElement;
 }
 
 type TagElementOption = {
@@ -124,8 +87,8 @@ function tagElement(tag: string, option: TagElementOption) {
 
 // 超简单易懂的实现 很多情况不考虑
 export function grow(
-  element: JSX.Element | null,
-  elementFactory?: (element: JSX.Element | null) => JSX.Element | null,
+  element: MiraElement | null,
+  elementFactory?: (element: MiraElement | null) => MiraElement | null,
   xmlns?: string,
 ): RenderTarget {
   const product = elementFactory ? elementFactory(element) : element;
@@ -172,7 +135,7 @@ export function grow(
     initProps(props, el);
     const children = props.children || [];
 
-    children.forEach((child: JSX.Element) => {
+    children.forEach((child: MiraElement) => {
       const node = grow(child, elementFactory, props.xmlns);
       if (!node) return;
       el.appendChild(node);
@@ -181,7 +144,7 @@ export function grow(
   }
 
   if (lang.isFn(type)) {
-    const miraElement: JSX.Element | null = type(props);
+    const miraElement: MiraElement | null = type(props);
     return grow(miraElement, elementFactory);
   }
 
@@ -190,11 +153,11 @@ export function grow(
 
 export function createElement<K extends keyof HTMLElementTagNameMap>(
   type: K | string,
-  elementProps: any,
+  elementProps: IProps,
   ...childElements: any[]
-): JSX.Element {
+): MiraElement {
   elementProps = elementProps || {};
-  childElements = flat(toArray(elementProps.children || childElements));
+  childElements = flatAndFilter(toArray(elementProps.children || childElements));
   elementProps.children = childElements;
   return {
     type,
@@ -202,7 +165,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
   };
 }
 
-export const Fragment = (props: IJsxProps) => props.children;
+export const Fragment = (props: IProps) => props.children;
 
 export const createDom = grow;
 

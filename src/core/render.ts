@@ -1,153 +1,148 @@
-/*
- * @Author: Shirtiny
- * @Date: 2021-08-05 15:00:12
- * @LastEditTime: 2021-08-10 11:28:31
- * @Description: 渲染
- */
-
-import { DOM, FC, MiraElement, Props, AskrNode } from "./types";
-import util from "../utils/util";
+import dom from "./dom";
+import lang from "../utils/lang";
+import logger from "../utils/logger";
+import { IProps, RenderTarget, MiraElement, AskrNode } from "./types";
 
 let rootAskrNode: AskrNode | null = null;
 
-/**
- * @description:
- * @param {Props} props
- * @return {void}
- */
-const updatePropsForDomEl = (
-  preProps: Props,
-  nextProps: Props,
-  el: DOM,
-): void => {
-  const preKeys = Object.keys(preProps);
-  const nextKeys = Object.keys(nextProps);
+// 只初始化无更新逻辑
+function initProps(props: IProps = {}, el: RenderTarget): void {
+  if (!el) return;
+  const keys = Object.keys(props);
 
-  preKeys.forEach((key) => {
-    if (key === "children") {
+  keys.forEach((k) => {
+    if (k === "children" || k === "is") {
       return;
     }
-    if (key.startsWith("on")) {
-      el.removeEventListener(key.substring(2).toLowerCase(), preProps[key]);
+    const v = props[k];
+    if (lang.isNullOrUndefined(v)) return;
+
+    if (k.startsWith("on")) {
+      el.addEventListener(k.substring(2).toLowerCase(), v);
     } else {
-      (<any>el)[key] = null;
+      let attribute = k,
+        value = v;
+      switch (k) {
+        case "className": {
+          attribute = "class";
+          break;
+        }
+        case "style": {
+          dom.applyStyle(el, v);
+          return;
+        }
+
+        default: {
+          break;
+        }
+      }
+      if (el instanceof Element) {
+        dom.applyAttribute(el, attribute, value);
+      } else {
+        (<any>el)[attribute] = value;
+      }
     }
   });
+}
 
-  nextKeys.forEach((key) => {
-    if (key === "children") {
-      return;
-    }
-    if (key.startsWith("on")) {
-      el.addEventListener(key.substring(2).toLowerCase(), nextProps[key]);
-    } else {
-      (<any>el)[key] = nextProps[key];
-    }
-  });
-};
+function tagElement(
+  tag: string,
+  option: {
+    ns?: string;
+    is?: string;
+  },
+) {
+  const { ns, is } = option;
+  return tag === ""
+    ? document.createTextNode("")
+    : ns
+    ? (document.createElementNS(ns, tag, { is }) as Element & SVGElement)
+    : document.createElement(tag, { is });
+}
 
-const createAskrNode = (element: MiraElement): AskrNode | null => {
-  if (!element) return null;
+export function grow(
+  element: MiraElement | null,
+  elementFactory?: (element: MiraElement | null) => MiraElement | null,
+  xmlns?: string,
+): RenderTarget {
+  const product = elementFactory ? elementFactory(element) : element;
 
-  // 判断是否为函数组件 或对象
-  const miraElement: MiraElement | null = util.isFn(element.type)
-    ? (element.type as FC<Props>)(element.props)
-    : element;
+  if (!product) return null;
 
-  if (!miraElement) return null;
-
-  // 渲染节点
-  const { type, props } = miraElement;
-  const el =
-    type === ""
-      ? document.createTextNode("")
-      : document.createElement(type as string);
-
-  // dom节点属赋值
-  updatePropsForDomEl({}, props, el as DOM);
-
-  const children = props.children || [];
-
-  // 递归生成子节点的dom和node
-  const kids: Array<AskrNode> = [];
-  children.forEach((child: MiraElement) => {
-    const node = createAskrNode(child);
-    if (!node) return;
-    kids.push(node);
-    el.appendChild(node.dom);
-  });
-
-  const askrNode: AskrNode = {
-    miraElement,
-    dom: el as DOM,
-    kids,
-  };
-
-  return askrNode;
-};
-
-const reconcileChildren = (askrNode: AskrNode, miraElement: MiraElement) => {
-  // instance 旧
-  // element 新
-  const dom = askrNode.dom;
-  const kids = askrNode.kids;
-  const nextChildElements = miraElement.props.children || [];
-  const newKids: Array<AskrNode> = []; // 新的孩子数组
-
-  const count = Math.max(kids.length, nextChildElements.length);
-
-  for (let i = 0; i < count; i++) {
-    const kid = kids[i];
-    const childElement = nextChildElements[i];
-
-    // 2. 递归 - 上一层函数 reconcile
-    const newKid = reconcile(dom, kid, childElement);
-    if (newKid) {
-      newKids.push(newKid);
-    }
+  //FIXME:Fragment的实现并不是这样的 不过这样目的也达到了
+  if (lang.isArray(product)) {
+    const frag = document.createDocumentFragment();
+    product.forEach((e) => {
+      const node = grow(e);
+      node && frag.appendChild(node);
+    });
+    return frag;
   }
-  return newKids;
-};
+
+  const { props, type } = product;
+
+  // 注意 所有h创建element都会有props
+  // 如果出现props为空的现象 请检查是不是混用了dom和jsx
+  if (!props) {
+    const isRenderTarget = product instanceof Node || product instanceof Text;
+    if (!isRenderTarget) {
+      logger.warn(
+        "jsx",
+        "grow",
+        `未解析${product},因为它不是有效的jsx element，并且也不是RenderTarget类型`,
+      );
+      return null;
+    }
+    logger.warn(
+      "jsx",
+      "grow",
+      `提示${product}并不是有效的jsx element 已经原样输出，不影响ui 但尽量少混用jsx和dom`,
+    );
+    return product as unknown as RenderTarget;
+  }
+
+  if (lang.isString(type)) {
+    const el = tagElement(type, {
+      ns: props.xmlns || xmlns,
+      is: props.is,
+    });
+    initProps(props, el);
+    const children = props.children || [];
+
+    children.forEach((child: MiraElement) => {
+      const node = grow(child, elementFactory, props.xmlns);
+      if (!node) return;
+      el.appendChild(node);
+    });
+    return el;
+  }
+
+  if (lang.isFn(type)) {
+    const miraElement: MiraElement | null = type(props);
+    return grow(miraElement, elementFactory);
+  }
+
+  return null;
+}
 
 const reconcile = (
-  parent: DOM,
+  parent: Node,
   askrNode: AskrNode | null,
   element: MiraElement,
 ): AskrNode | null => {
   if (!parent || !element) return null;
 
-  // 判断是否为函数组件 或对象
-  const miraElement: MiraElement | null = util.isFn(element.type)
-    ? (element.type as FC<Props>)(element.props)
-    : element;
-
-  // 预渲染元素为空时 删除dom
-  if (!miraElement) {
-    askrNode?.dom && parent.removeChild(askrNode.dom);
-    return null;
-  }
-
-  // 类型相同复用dom
-  if (askrNode?.miraElement?.type === miraElement.type) {
-    updatePropsForDomEl(
-      askrNode.miraElement.props,
-      miraElement.props,
-      askrNode.dom,
-    );
-    // 1. 替换-新的孩子数组
-    askrNode.kids = reconcileChildren(askrNode, miraElement);
-    // 更新node引用的element
-    askrNode.miraElement = miraElement;
-    return askrNode;
-  }
-
-  const node = createAskrNode(miraElement);
+  const node = grow(element);
   if (!askrNode) {
-    node && parent.appendChild(node.dom);
+    node && parent.appendChild(node);
   } else {
-    node && parent.replaceChild(node.dom, askrNode.dom);
+    node && dom.replaceChild(parent, askrNode.dom, node);
   }
-  return node;
+  return {
+    miraElement: element,
+    dom: node,
+    kids: [],
+  };
 };
 
 /**
@@ -156,7 +151,7 @@ const reconcile = (
  * @param {Element} parent dom
  * @return {void}
  */
-const render = (miraElement: MiraElement, parent: DOM | null): void => {
+const render = (miraElement: MiraElement, parent: Node): void => {
   if (!parent) return;
   const preNode = rootAskrNode;
   const nextNode = reconcile(parent, preNode, miraElement);

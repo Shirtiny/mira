@@ -1,6 +1,9 @@
-import { grow, RenderTarget, JSX } from "./jsx";
+import { grow } from "./jsx";
 import lang from "../utils/lang";
 import style from "./style";
+import { RenderTarget, MiraElement } from "./types";
+
+type CanBeEmpty<T> = T | null | undefined;
 
 export function parseHtml(htmlString: string): DocumentFragment {
   return document.createRange().createContextualFragment(htmlString);
@@ -43,7 +46,7 @@ export function empty<N extends Node>(parent?: N | null): void {
 }
 
 export function replace<N extends Node>(
-  oldNode: N | null | undefined,
+  oldNode: CanBeEmpty<N>,
   ...newNodes: any[]
 ): void {
   if (!newNodes.length || !oldNode?.parentNode) return;
@@ -57,6 +60,18 @@ export function replace<N extends Node>(
   }
 }
 
+export function replaceChild<N extends Node>(
+  parentNode: CanBeEmpty<N>,
+  oldNode: CanBeEmpty<N>,
+  ...newNodes: any[]
+): void {
+  if (!newNodes.length || !oldNode || !parentNode) return;
+  const nodes = newNodes.filter((n) => n);
+  const frag = createFragment();
+  frag.append(...nodes);
+  parentNode.replaceChild(oldNode, frag);
+}
+
 export function removeSelf<N extends Node>(el?: N | null): void {
   if (!el) return;
   if (el instanceof Element) {
@@ -68,7 +83,7 @@ export function removeSelf<N extends Node>(el?: N | null): void {
 }
 
 // 不导出 外部没必要使用
-function elementFactory(element: JSX.Element | null) {
+function elementFactory(element: MiraElement | null) {
   if (!element || !element.props) return element;
   // const { props } = element;
   // if (props.withCommonNamespace) {
@@ -80,7 +95,7 @@ function elementFactory(element: JSX.Element | null) {
 
 // 从jsx创建dom节点
 export function createByJsx<T = RenderTarget>(
-  element: JSX.Element | null,
+  element: MiraElement | null,
 ): T | null {
   if (!element) return null;
   return <T>(<unknown>grow(element, elementFactory));
@@ -156,6 +171,7 @@ const dom = {
   toAttribute,
   applyAttribute,
   applyStyle,
+  replaceChild
 };
 
 export default dom;
