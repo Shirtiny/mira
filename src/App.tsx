@@ -20,11 +20,15 @@ const List = () => {
   );
 };
 
+const a = document.createElement("a");
+a.textContent = "this is a htmlElement direct create by document.";
+
 const App = () => {
   return (
     <div>
       <h1>dd</h1>
       <List />
+      {a}
     </div>
   );
 };

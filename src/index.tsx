@@ -8,28 +8,9 @@ import mira from "./core/jsx";
 import { render } from "./core";
 import App from "./App";
 
-// render(<App />, document.querySelector("#root"));
-
-const test = <>{"sd"}</>;
-
-console.log(test);
+const test = <>{"if not clear root, this will appear."}</>;
 render(test, document.querySelector("#root")!);
 
-// 在canvas上绘制图片
-const a = () => {
-  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  const ctx = canvas.getContext("2d")!;
-  const img = new Image();
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0);
-  };
-  img.src = "https://pic.cnblogs.com/avatar/1040921/20210110173340.png";
-};
+render(<App />, document.querySelector("#root"));
 
-// 使用某个js库压缩html
-const compressHtml = () => {
-  const html: HTMLTextAreaElement | null = document.querySelector("#html");
-  if (html != null) {
-    console.log(html.value);
-  }
-};
+console.log(test);

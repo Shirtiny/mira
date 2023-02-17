@@ -65,40 +65,43 @@ export function grow(
   elementFactory?: (element: MiraElement | null) => MiraElement | null,
   xmlns?: string,
 ): RenderTarget {
-  const product = elementFactory ? elementFactory(element) : element;
+  const productElement = elementFactory ? elementFactory(element) : element;
 
-  if (!product) return null;
+  if (!productElement) return null;
 
   //FIXME:Fragment的实现并不是这样的 不过这样目的也达到了
-  if (lang.isArray(product)) {
+  if (lang.isArray(productElement)) {
     const frag = document.createDocumentFragment();
-    product.forEach((e) => {
+    productElement.forEach((e) => {
       const node = grow(e);
       node && frag.appendChild(node);
     });
     return frag;
   }
 
-  const { props, type } = product;
+  const { props, type } = productElement;
 
   // 注意 所有h创建element都会有props
   // 如果出现props为空的现象 请检查是不是混用了dom和jsx
   if (!props) {
-    const isRenderTarget = product instanceof Node || product instanceof Text;
+    const isRenderTarget =
+      dom.isElement(productElement) || dom.isText(productElement);
     if (!isRenderTarget) {
       logger.warn(
         "jsx",
         "grow",
-        `未解析${product},因为它不是有效的jsx element，并且也不是RenderTarget类型`,
+        `未解析此输入,因为它不是有效的jsx element，并且也不是RenderTarget类型。 input：`,
+        productElement,
       );
       return null;
     }
     logger.warn(
       "jsx",
       "grow",
-      `提示${product}并不是有效的jsx element 已经原样输出，不影响ui 但尽量少混用jsx和dom`,
+      `提示：此输入并不是有效的jsx element 已经原样输出，不影响ui 但尽量少混用jsx和dom。 input： `,
+      productElement,
     );
-    return product as unknown as RenderTarget;
+    return productElement as unknown as RenderTarget;
   }
 
   if (lang.isString(type)) {
@@ -125,22 +128,25 @@ export function grow(
   return null;
 }
 
-const reconcile = (
-  parent: Node,
-  askrNode: AskrNode | null,
+const renderElementIntoContainer = (
+  container: Element,
+  parentAskrNode: AskrNode | null,
   element: MiraElement,
 ): AskrNode | null => {
-  if (!parent || !element) return null;
+  if (!container || !element) return null;
+  // 清空容器
+  dom.clearContainer(container);
 
   const node = grow(element);
-  if (!askrNode) {
-    node && parent.appendChild(node);
+  if (!parentAskrNode) {
+    node && container.appendChild(node);
   } else {
-    node && dom.replaceChild(parent, askrNode.dom, node);
+    node && dom.replaceChild(container, parentAskrNode.dom, node);
   }
   return {
     miraElement: element,
     dom: node,
+    // TODO: kids
     kids: [],
   };
 };
@@ -151,11 +157,12 @@ const reconcile = (
  * @param {Element} parent dom
  * @return {void}
  */
-const render = (miraElement: MiraElement, parent: Node): void => {
+const render = (miraElement: MiraElement, parent: Element | null): void => {
   if (!parent) return;
-  const preNode = rootAskrNode;
-  const nextNode = reconcile(parent, preNode, miraElement);
-  rootAskrNode = nextNode;
+
+  // const preNode = rootAskrNode;
+  const nextNode = renderElementIntoContainer(parent, null, miraElement);
+  // rootAskrNode = nextNode;
 };
 
 export default render;

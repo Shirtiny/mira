@@ -13,12 +13,7 @@ export interface AskrNode {
   kids: Array<AskrNode>;
 }
 
-export type RenderTarget =
-  | HTMLElement
-  | SVGElement
-  | Text
-  | DocumentFragment
-  | null;
+export type RenderTarget = Element | Text | DocumentFragment | null;
 
 // for conditional rendering we support boolean child element e.g cond && <tag />
 export type JsxChild =

@@ -5,6 +5,30 @@ import { RenderTarget, MiraElement } from "./types";
 
 type CanBeEmpty<T> = T | null | undefined;
 
+type ElementNode = RenderTarget | Document;
+
+export function isElement(arg?: any): arg is Element {
+  return arg?.nodeType === Node.ELEMENT_NODE;
+}
+export function isHtmlElement(arg?: any): arg is HTMLElement {
+  return lang.isObject(arg) && arg instanceof HTMLElement;
+}
+export function isText(arg?: any): arg is Text {
+  return arg?.nodeType === Node.TEXT_NODE;
+}
+export function isComment(arg?: any): arg is Comment {
+  return arg?.nodeType === Node.COMMENT_NODE;
+}
+export function isDocument(arg?: any): arg is Document {
+  return arg?.nodeType === Node.DOCUMENT_NODE;
+}
+export function isDocumentType(arg?: any): arg is DocumentType {
+  return arg?.nodeType === Node.DOCUMENT_TYPE_NODE;
+}
+export function isDocumentFragment(arg?: any): arg is DocumentFragment {
+  return arg?.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+}
+
 export function parseHtml(htmlString: string): DocumentFragment {
   return document.createRange().createContextualFragment(htmlString);
 }
@@ -23,19 +47,19 @@ export function createFragment() {
   return document.createDocumentFragment();
 }
 
-export function append<N extends Node>(
+export function append<N extends ElementNode>(
   parent?: N | null,
   ...children: any[]
 ): void {
   if (!parent) return;
   const frag = createFragment();
-  frag.append(...(children.filter((n) => n) as N[]));
+  frag.append(...children.filter((n) => n));
   parent.appendChild(frag);
 }
 
-export function empty<N extends Node>(parent?: N | null): void {
+export function empty<N extends ElementNode>(parent?: N | null): void {
   if (!parent) return;
-  if (parent instanceof Element) {
+  if (isElement(parent)) {
     parent.innerHTML = "";
     return;
   } else {
@@ -45,13 +69,13 @@ export function empty<N extends Node>(parent?: N | null): void {
   }
 }
 
-export function replace<N extends Node>(
+export function replace<N extends ElementNode>(
   oldNode: CanBeEmpty<N>,
   ...newNodes: any[]
 ): void {
   if (!newNodes.length || !oldNode?.parentNode) return;
   const nodes = newNodes.filter((n) => n);
-  if (oldNode instanceof Element) {
+  if (isElement(oldNode)) {
     oldNode.replaceWith(...nodes);
   } else {
     const frag = createFragment();
@@ -60,7 +84,7 @@ export function replace<N extends Node>(
   }
 }
 
-export function replaceChild<N extends Node>(
+export function replaceChild<N extends ElementNode>(
   parentNode: CanBeEmpty<N>,
   oldNode: CanBeEmpty<N>,
   ...newNodes: any[]
@@ -72,13 +96,30 @@ export function replaceChild<N extends Node>(
   parentNode.replaceChild(oldNode, frag);
 }
 
-export function removeSelf<N extends Node>(el?: N | null): void {
+export function removeSelf<N extends ElementNode>(el: CanBeEmpty<N>): void {
   if (!el) return;
-  if (el instanceof Element) {
+  if (isElement(el)) {
     el.remove();
     return;
   } else {
     el.parentNode?.removeChild(el);
+  }
+}
+
+export function clearContainer<N extends ElementNode>(
+  container: CanBeEmpty<N>,
+) {
+  if (!container) return;
+  if (isElement(container)) {
+    // We have refined the container to Element type
+    const element = container as Element;
+    element.textContent = "";
+  } else if (isDocument(container)) {
+    // We have refined the container to Document type
+    const doc = container as Document;
+    if (doc.documentElement) {
+      doc.removeChild(doc.documentElement);
+    }
   }
 }
 
@@ -120,7 +161,7 @@ export function applyAttribute(
   attributeName: string | undefined,
   value: any,
 ) {
-  if (!el || !(el instanceof Element)) return;
+  if (!el || !isElement(el)) return;
   if (!attributeName) return;
   if (lang.isObject(value)) return;
 
@@ -140,7 +181,7 @@ export function applyAttribute(
 }
 
 export function applyStyle(el: RenderTarget, styles: Object | string) {
-  if (!el || !(el instanceof HTMLElement)) return;
+  if (!el || !isHtmlElement(el)) return;
   if (lang.isString(styles)) {
     el.setAttribute("style", style.line(styles));
     return;
@@ -171,7 +212,15 @@ const dom = {
   toAttribute,
   applyAttribute,
   applyStyle,
-  replaceChild
+  replaceChild,
+  clearContainer,
+  isElement,
+  isHtmlElement,
+  isText,
+  isComment,
+  isDocument,
+  isDocumentType,
+  isDocumentFragment,
 };
 
 export default dom;
