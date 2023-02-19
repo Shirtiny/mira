@@ -8,9 +8,9 @@ import mira from "./core/jsx";
 import { render } from "./core";
 import App from "./App";
 
-const test = <>{"if not clear root, this will appear."}</>;
-render(test, document.querySelector("#root")!);
+// const test = <>{"if not clear root, this will appear."}</>;
+// render(test, document.querySelector("#root")!);
 
 render(<App />, document.querySelector("#root"));
 
-console.log(test);
+// console.log(test);

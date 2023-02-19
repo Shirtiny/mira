@@ -1,7 +1,7 @@
-import { grow } from "./jsx";
+import { grow, growForAskrNode } from "./jsx";
 import lang from "../utils/lang";
 import style from "./style";
-import { RenderTarget, MiraElement } from "./types";
+import { RenderTarget, MiraElement, AskrNode } from "./types";
 
 type CanBeEmpty<T> = T | null | undefined;
 
@@ -51,7 +51,7 @@ export function append<N extends ElementNode>(
   parent?: N | null,
   ...children: any[]
 ): void {
-  if (!parent) return;
+  if (!parent || !children.length) return;
   const frag = createFragment();
   frag.append(...children.filter((n) => n));
   parent.appendChild(frag);
@@ -142,6 +142,14 @@ export function createByJsx<T = RenderTarget>(
   return <T>(<unknown>grow(element, elementFactory));
 }
 
+// 从askrNode创建dom节点
+export function createByAskr<T = RenderTarget>(
+  askr: AskrNode | null,
+): T | null {
+  if (!askr) return null;
+  return <T>(<unknown>growForAskrNode(askr));
+}
+
 export function getElementTypeByTag<K extends keyof HTMLElementTagNameMap>(
   tag: K,
 ) {
@@ -204,6 +212,7 @@ const dom = {
   create,
   createFragment,
   createByJsx,
+  createByAskr,
   append,
   empty,
   replace,

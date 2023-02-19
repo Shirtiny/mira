@@ -5,7 +5,9 @@ dist_*
 *.tgz
 
 .DS_Store
-.vscode
+/.vscode/*
+!/.vscode/launch.json
+
 .idea
 
 .turbo

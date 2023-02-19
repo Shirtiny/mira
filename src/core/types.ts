@@ -7,13 +7,7 @@
 
 export type DOM = HTMLElement | SVGElement;
 
-export interface AskrNode {
-  miraElement: MiraElement;
-  dom: RenderTarget;
-  kids: Array<AskrNode>;
-}
-
-export type RenderTarget = Element | Text | DocumentFragment | null;
+export type RenderTarget = Element | Text | DocumentFragment | null | undefined;
 
 // for conditional rendering we support boolean child element e.g cond && <tag />
 export type JsxChild =
@@ -38,6 +32,37 @@ export interface MiraElement<P extends IProps = any, T = string> {
   type: T | FC<P>;
   props: P;
   key?: string;
+}
+
+export interface AskrNode<P extends IProps = any> {
+  // react中 为LazyComponent时 type为null
+  type?: string | FC<P> | null;
+
+  // MiraElement的type
+  elementType?: string | FC<P>;
+
+  // MiraElement的props
+  pendingProps: P;
+
+  key?: string;
+  stateNode?: RenderTarget;
+
+  kids?: AskrNode[];
+
+  // The Fiber to return to after finishing processing this one.
+  // This is effectively the parent.
+  // It is conceptually the same as the return address of a stack frame.
+  return?: AskrNode | null;
+
+  // Singly Linked List Tree Structure.
+  child?: AskrNode | null;
+  sibling?: AskrNode | null;
+
+  nextEffect?: AskrNode | null;
+  lastEffect?: AskrNode | null;
+  // firstEffect?: AskrNode | null;
+
+  ["__askr-node-name"]?: string;
 }
 
 // 暂时不写那么复杂

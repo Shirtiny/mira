@@ -11,10 +11,15 @@ import "./style/index.scss";
 const list = [0, 1, 2, 3];
 
 const List = () => {
+  const handleClick = (e: Event, v: any) => {
+    console.log(e, v);
+  };
   return (
     <ul className="list">
       {list.map((v) => (
-        <li className="item">{v}</li>
+        <li className="item" onClick={(e: any) => handleClick(e, v)}>
+          {v}
+        </li>
       ))}
     </ul>
   );
@@ -23,12 +28,22 @@ const List = () => {
 const a = document.createElement("a");
 a.textContent = "this is a htmlElement direct create by document.";
 
+const normalTextVariant = "normal text variant";
+const userInput = '<img src="x" onerror="alert(\'XSS Attack!\');" />';
+
 const App = () => {
   return (
-    <div>
+    <div className="app">
       <h1>dd</h1>
       <List />
-      {a}
+      <span>{normalTextVariant}</span>
+      <br />
+      <span>{userInput}</span>
+      <br />
+      <>Fragment</>
+      <br />
+      <>{"Fragment2"}</>
+      {/* {a} */}
     </div>
   );
 };
