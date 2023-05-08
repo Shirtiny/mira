@@ -43,7 +43,7 @@ const App = () => {
       <>Fragment</>
       <br />
       <>{"Fragment2"}</>
-      {/* {a} */}
+      {a}
     </div>
   );
 };

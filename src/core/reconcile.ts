@@ -1,4 +1,4 @@
-import lang from "~/src/utils/lang";
+import lang from "~src/utils/lang";
 import util from "~src/utils/util";
 import commit from "./commit";
 import dom from "./dom";
@@ -10,16 +10,13 @@ let currentEffect: AskrNode | null = null;
 const convertToAskr = (element?: MiraElement | null): AskrNode | null => {
   if (!element) return null;
   const { type, props, key } = element;
+  if (!props) return null;
   return {
     type,
     elementType: type,
     pendingProps: props,
     key: key,
-    ["__askr-node-name"]: lang.isFn(type)
-      ? type.name
-      : jsx.checkIsTextElement(type)
-      ? `#text:${props.nodeValue}`
-      : type,
+    ["__askr-node-name"]: lang.isFn(type) ? type.name : type,
   };
 };
 

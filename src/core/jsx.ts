@@ -11,16 +11,18 @@ import logger from "../utils/logger";
 import dom from "./dom";
 import { IProps, RenderTarget, MiraElement, AskrNode } from "./types";
 
+const TEXT_ELEMENT_TYPE = "#text";
+
 function checkIsNotEmptyChild(x: any) {
   return x != null && x !== true && x !== false;
 }
 
 function text(v?: any): MiraElement {
-  return { type: "", props: { nodeValue: String(v) + "" } } as MiraElement;
+  return { type: TEXT_ELEMENT_TYPE, props: { nodeValue: String(v) + "" } } as MiraElement;
 }
 
 export function checkIsTextElement(type: any) {
-  return type === "";
+  return type === TEXT_ELEMENT_TYPE;
 }
 
 function flatAndFilter(arr: any[], target: any[] = []) {
@@ -227,6 +229,7 @@ export const Fragment = (props: IProps) => props.children;
 export const createDom = grow;
 
 const jsx = {
+  TEXT_ELEMENT_TYPE,
   createElement,
   Fragment,
   grow,
