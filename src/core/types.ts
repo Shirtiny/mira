@@ -34,6 +34,12 @@ export interface MiraElement<P extends IProps = any, T = string> {
   key?: string;
 }
 
+export interface IHook {
+  list: IEffect[]
+  layout: IEffect[]
+  effect: IEffect[]
+}
+
 export interface AskrNode<P extends IProps = any> {
   // react中 为LazyComponent时 type为null
   type?: string | FC<P> | null;
@@ -48,6 +54,8 @@ export interface AskrNode<P extends IProps = any> {
   stateNode?: RenderTarget;
 
   kids?: AskrNode[];
+  hooks?: IHook;
+  dirty?: boolean;
 
   // The Fiber to return to after finishing processing this one.
   // This is effectively the parent.
@@ -64,6 +72,12 @@ export interface AskrNode<P extends IProps = any> {
 
   ["__askr-node-name"]?: string;
 }
+
+export type SetStateAction<S> = S | ((prevState: S) => S);
+export type Dispatch<A> = (value: A, resume?: boolean) => void;
+export type Reducer<S, A> = (prevState: S, action: A) => S;
+
+export type IEffect = [Function?, number?, Function?];
 
 // 暂时不写那么复杂
 // 注意创建的元素不只有htmlElement 这里只写通用jsx属性

@@ -5,6 +5,7 @@
  * @Description:
  */
 
+import { useState } from "./core/hooks";
 import mira from "./core/jsx";
 import "./style/index.scss";
 
@@ -32,9 +33,11 @@ const normalTextVariant = "normal text variant";
 const userInput = '<img src="x" onerror="alert(\'XSS Attack!\');" />';
 
 const App = () => {
+  const [count, setCount] = useState(0);
   return (
     <div className="app">
-      <h1>dd</h1>
+      <h1>dd {count}</h1>
+      <button onClick={() => setCount((v) => v + 1)}>add</button>
       <List />
       <span>{normalTextVariant}</span>
       <br />

@@ -66,6 +66,14 @@ module.exports = {
 };
 ```
 
+## Problem
+
+```sh
+Error: The specified module could not be found.
+\\?\F:\dev\sh\mira\node_modules\@parcel\source-map\parcel_sourcemap_node\artifacts\index.win32-x64-msvc.node
+`
+https://github.com/parcel-bundler/parcel/issues/7104#issuecomment-967260755
+
 ## Acknowledgment
 
 [raulanatol / template-ts-package](https://github.com/raulanatol/template-ts-package)
@@ -73,3 +81,4 @@ module.exports = {
 ## License
 
 The MIT License (MIT)
+```

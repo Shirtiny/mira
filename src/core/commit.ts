@@ -8,6 +8,17 @@ const shouldYield = (deadlineTime: number): boolean => {
   return performance.now() >= deadlineTime;
 };
 
+export const removeElement = (fiber: AskrNode) => {
+  if (lang.isFn(fiber.elementType)) {
+    fiber.hooks && fiber.hooks.list.forEach((e) => e[2] && e[2]());
+    fiber.kids?.forEach(removeElement);
+  } else {
+    // fiber.parentNode.removeChild(fiber.node);
+    // kidsRefer(fiber.kids);
+    // refer(fiber.ref, null);
+  }
+};
+
 const searchParentNode = (askerNode?: AskrNode | null): RenderTarget => {
   while (askerNode) {
     askerNode = askerNode.return;

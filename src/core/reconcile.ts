@@ -3,9 +3,19 @@ import util from "~src/utils/util";
 import commit from "./commit";
 import dom from "./dom";
 import jsx from "./jsx";
-import { AskrNode, MiraElement, RenderTarget } from "./types";
+import { AskrNode, FC, MiraElement } from "./types";
+import { resetCursor } from "./hooks";
 
 let currentEffect: AskrNode | null = null;
+let currentFiber: AskrNode | null = null;
+let rootFiber = null;
+
+export const getCurrentFiber = () => currentFiber || null;
+
+const updateHook = (fiber: AskrNode): any => {
+  resetCursor();
+  currentFiber = fiber;
+};
 
 const convertToAskr = (element?: MiraElement | null): AskrNode | null => {
   if (!element) return null;
@@ -74,13 +84,18 @@ const growFCAskr = (askr?: AskrNode | null) => {
   updateChildren(askr, pendingChildren);
 };
 
-const processAskr = (askrNode?: AskrNode | null): AskrNode | null => {
-  console.log("reconcile", askrNode);
+const captureAskr = (askrNode?: AskrNode | null): AskrNode | null => {
+  console.log("captureAskr", askrNode);
   if (!askrNode || !askrNode.pendingProps) return null;
 
   const { elementType } = askrNode;
   // FC
   if (lang.isFn(elementType)) {
+    // const memoFiber = memo(fiber)
+    // if (memoFiber) {
+    //   return memoFiber
+    // }
+    updateHook(askrNode);
     growFCAskr(askrNode);
   } else {
     // elementType 为 text, undefined  root的是undefined
@@ -100,9 +115,17 @@ const processAskr = (askrNode?: AskrNode | null): AskrNode | null => {
   return null;
 };
 
+export const update = (fiber?: AskrNode) => {
+  if (!fiber) return;
+  if (!fiber.dirty) {
+    fiber.dirty = true;
+    reconcileImpl(fiber);
+  }
+};
+
 const reconcileImpl = (askrNode?: AskrNode | null) => {
   while (!!askrNode) {
-    askrNode = processAskr(askrNode);
+    askrNode = captureAskr(askrNode);
   }
   askrNode && reconcileImpl(askrNode);
 };
